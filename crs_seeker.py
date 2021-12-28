@@ -7,7 +7,8 @@ from os import system, name
 Chance = float # Percentage probability of being chosen for the class.
 ClassesType = NewType('ClassesType', list[tuple[ResultSet[Tag], Chance]])
 
-allowed_restrictions = ['DCS', 'BS CS'] # Modify if needed.
+# Keywords found in the Remarks section of a course that makes the course available.
+allowed_restrictions = ['DCS', 'BS CS']
 
 
 def clear_screen():
@@ -52,39 +53,38 @@ def main() -> None:
     classes = ClassesType([])
 
     # Group available classes
-    L = s.find_all('tr')
-    for i, tr in enumerate(L):
+    for tr in s.find_all('tr'):
         if tr.get_attribute_list('class') in [['tr_odd'], ['tr_even']]:
             class_fields: ResultSet[Tag] = tr.find_all('td')
 
             if len(class_fields) < 7: # Not a valid class.
                 continue
 
-            restriction: str = class_fields[4].text
+            remarks: str = class_fields[4].text
 
             # Allow a class based on a specific keyword within the remarks section.
             for allowed in allowed_restrictions:
-                if allowed in restriction:
+                if allowed in remarks:
                     add_to_classes(classes, class_fields)
                     continue
 
-            # Allow a class not restricted to a specific college.
-            if 'For' not in restriction:
+            # 'For' in the remarks 'usually' imply the course is college-specific,
+            # so we include the course if 'For' is not found in its remarks.
+            if 'For' not in remarks:
                 add_to_classes(classes, class_fields)
                 
 
+    # Print classes with the highest chances.
     while True:
         nclasses = int(input(f'\nNumber of classes to show (Max is {len(classes)}): '))
 
-        if nclasses > len(classes):
-            print('Cannot exceed max available classes.')
-            continue
-        else:
+        if nclasses <= len(classes):
             break
+        else:
+            print('Cannot exceed max available classes.')
 
     classes.sort(key= lambda x: x[1], reverse= True)
 
-    # Print classes with the highest chances.
     print('\nTop available classes based on chance of acquiring a slot' + 
           '(Note: some classes may actually not be available, check the Remarks Section):\n')
     print('╔' + '═' * 5 + '╦' + '═' * 12 + '╦' + '═' * 28 + '╦' + '═' * 29 + 
@@ -94,24 +94,31 @@ def main() -> None:
     print('╠' + '═' * 5 + '╬' + '═' * 12 + '╬' + '═' * 28 + '╬' + '═' * 29 + 
           '╬' + '═' * 55 + '╬' + '═' * 10 + '╣')
     for i in range(nclasses):
+        index = str(i+1).center(5)
+
         # If the class contains both a lab and lecture component, print only the lab component.
         class_code = classes[i][0][0].get_text('$').split('$')[0]
+        class_code = class_code.center(12)
 
         instructor = classes[i][0][1].get_text('$').split('$')[-1]
         if len(instructor) > 24:
             instructor = instructor[:24] + '...'
+        instructor = instructor.center(28)
 
         schedroom = classes[i][0][3].get_text('$').split('$')[0]
+        schedroom = schedroom.center(29)
 
         remarks = classes[i][0][4].text.strip()
         if len(remarks) > 50:
             remarks = remarks[:50] + '...'
         elif not len(remarks): 
             remarks = 'None'
+        remarks = remarks.center(55)
 
         chance_ = str(classes[i][1]) + ' %'
-        print(f'║{str(i+1).center(5)}║{class_code.center(12)}║{instructor.center(28)}║' +
-              f'{schedroom.center(29)}║{remarks.center(55)}║{chance_.center(10)}║')
+        chance_ = chance_.center(10)
+
+        print(f'║{index}║{class_code}║{instructor}║{schedroom}║{remarks}║{chance_}║')
         if i != nclasses - 1:
             print('║' + '-' * 5 + '║' + '-' * 12 + '║' + '-' * 28 + '║' + 
                   '-' * 29 + '║' + '-' * 55 + '║' + '-' * 10 + '║')
