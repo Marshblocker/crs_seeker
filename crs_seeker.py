@@ -14,9 +14,12 @@ def add_to_classes(classes: ClassesType, class_fields: ResultSet[Tag]):
     available = float(class_fields[5].b.text)
     demand = float(class_fields[6].text)
 
-    chance: Chance = 99999.0 # Highest percent if demand = 0.
-    if demand != 0:
-        chance: Chance = round((available / demand) * 100, 2)
+    chance: Chance = 0.0 # Default is zero if available is zero.
+    if available != 0:
+        if int(demand) == 0:
+            chance = 99999.99 # Highest value since there is no demand but there are available slots.
+        else:
+            chance = round((available / demand) * 100, 2)
 
     classes.append((class_fields, chance))    
 
