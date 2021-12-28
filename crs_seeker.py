@@ -11,7 +11,12 @@ allowed_restrictions = ['DCS', 'BS CS'] # Modify if needed.
 
 def add_to_classes(classes: ClassesType, class_fields: ResultSet[Tag]):
     assert isinstance(class_fields[5].b, Tag), f'Not tag.'
-    available = float(class_fields[5].b.text)
+    
+    try:
+        available = float(class_fields[5].b.text)
+    except ValueError:
+        return
+        
     demand = float(class_fields[6].text)
 
     chance: Chance = 0.0 # Default is zero if available is zero.
@@ -27,7 +32,7 @@ def main() -> None:
     html_lines: list[str] = []
 
     # Convert HTML input into a BeautifulSoup.
-    print('Input the source code of the webpage of the chosen preenlistment class \n(Can be viewed by pressing Ctrl+U): ')
+    print('Input the source code of the webpage of the chosen preenlistment class list\n(Can be viewed by pressing Ctrl+U): ')
     while True:
         line = input()
 
@@ -75,9 +80,9 @@ def main() -> None:
 
     # Print classes with the highest chances.
     print('\nTop available classes based on chance of acquiring a slot (Note: some classes may actually not be available, check the Remarks Section):\n')
-    print('╔' + '═' * 12 + '╦' + '═' * 28 + '╦' + '═' * 29 + '╦' + '═' * 55 + '╦' + '═' * 10 + '╗')
-    print('║ Class Code ║        Instructor/s        ║        Schedule/Room        ║                        Remarks                        ║  Chance  ║')
-    print('╠' + '═' * 12 + '╬' + '═' * 28 + '╬' + '═' * 29 + '╬' + '═' * 55 + '╬' + '═' * 10 + '╣')
+    print('╔' + '═' * 5 + '╦' + '═' * 12 + '╦' + '═' * 28 + '╦' + '═' * 29 + '╦' + '═' * 55 + '╦' + '═' * 10 + '╗')
+    print('║  N  ║ Class Code ║        Instructor/s        ║        Schedule/Room        ║                        Remarks                        ║  Chance  ║')
+    print('╠' + '═' * 5 + '╬' + '═' * 12 + '╬' + '═' * 28 + '╬' + '═' * 29 + '╬' + '═' * 55 + '╬' + '═' * 10 + '╣')
     for i in range(nclasses):
         # If the class contains both a lab and lecture component, print only the lab component.
         class_code = classes[i][0][0].get_text('$').split('$')[0]
@@ -91,12 +96,15 @@ def main() -> None:
         remarks = classes[i][0][4].text.strip()
         if len(remarks) > 50:
             remarks = remarks[:50] + '...'
-        elif not len(remarks):
+        elif not len(remarks): 
             remarks = 'None'
 
         chance_ = str(classes[i][1]) + ' %'
-        print(f'║{class_code.center(12)}║{instructor.center(28)}║{schedroom.center(29)}║{remarks.center(55)}║{chance_.center(10)}║')
-    print('╚' + '═' * 12 + '╩' + '═' * 28 + '╩' + '═' * 29 + '╩' + '═' * 55 + '╩' + '═' * 10 + '╝')        
+        print(f'║{str(i+1).center(5)}║{class_code.center(12)}║{instructor.center(28)}║{schedroom.center(29)}║{remarks.center(55)}║{chance_.center(10)}║')
+        if i != nclasses - 1:
+            print('║' + '-' * 5 + '║' + '-' * 12 + '║' + '-' * 28 + '║' + '-' * 29 + '║' + '-' * 55 + '║' + '-' * 10 + '║')
+
+    print('╚' + '═' * 5 + '╩' + '═' * 12 + '╩' + '═' * 28 + '╩' + '═' * 29 + '╩' + '═' * 55 + '╩' + '═' * 10 + '╝')   
 
 
 if __name__ == '__main__':
