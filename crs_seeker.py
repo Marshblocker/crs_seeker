@@ -25,7 +25,7 @@ def add_to_classes(classes: ClassesType, class_fields: ResultSet[Tag]):
     demand = float(class_fields[6].text)
 
     chance: Chance = 0.0 # Default is zero if available is zero.
-    if available != 0:
+    if int(available) != 0:
         if int(demand) == 0:
             chance = 99999.99 # Highest value since there is no demand but there are available slots.
         else:
