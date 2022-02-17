@@ -1,7 +1,7 @@
 # CRS Seeker
 
 ## Note
-This program uses `BeautifulSoup` for parsing CRS' HTML, make sure you have that (run `pip install bs4` if not).
+This program uses `BeautifulSoup` for parsing CRS' HTML, run `pip install bs4` if you don't have it yet.
 
 ## How to Use
 ```
