@@ -17,4 +17,4 @@ Then paste the HTML code of the webpage of the CRS pre-enlistment page of your c
 a while, then a table of the top course schedules will be displayed.
 
 ## Future Plan
-Automatic retrieval of the target webpage HTML using `requests`.
+Port this program as a Web Extension.
