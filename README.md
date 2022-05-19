@@ -14,7 +14,7 @@ cd crs_seeker
 python crs_seeker
 ```
 Then paste the HTML code of the webpage of the CRS pre-enlistment page of your chosen subject. Wait for
-a while, then a table of the top course schedules will be displayed, like so (instructor's name are concealed for privacy purposes):
+a while, then a table of the top course schedules will be displayed, like so (instructors' names are concealed for privacy purposes):
 
 ![Program sample](sample.png "Program sample")
 
